@@ -1,0 +1,42 @@
+version: "3.9"
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: "001020"
+      MYSQL_DATABASE: "hmdp"
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./hmdp.sql:/docker-entrypoint-initdb.d/hmdp.sql:ro
+
+  redis:
+    image: redis:6.2
+    command: ["redis-server", "--requirepass", "001020"]
+    ports:
+      - "6379:6379"
+
+  app:
+    build: .
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/hmdp?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
+      SPRING_DATASOURCE_USERNAME: "root"
+      SPRING_DATASOURCE_PASSWORD: "001020"
+      SPRING_REDIS_HOST: "redis"
+      SPRING_REDIS_PORT: "6379"
+      SPRING_REDIS_PASSWORD: "001020"
+    depends_on:
+      - mysql
+      - redis
+    ports:
+      - "8081:8081"
+
+  nginx:
+    image: nginx:1.18
+    volumes:
+      - ./src/main/resources/nginx-1.18.0/html:/usr/share/nginx/html:ro
+      - ./deploy/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "8088:8080"
+    depends_on:
+      - app

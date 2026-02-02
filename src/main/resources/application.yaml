@@ -25,3 +25,17 @@ mybatis-plus:
 logging:
   level:
     com.hmdp: debug
+ai:
+  mcp:
+    base-url: https://mcp.amap.com/mcp
+    api-key: ${AMAP_MCP_KEY:}
+    timeout-ms: 15000
+    tools:
+      poi-keyword: keyword_search
+      weather-city: weather_city
+      distance: distance
+  llm:
+    api-base: https://api.deepseek.com/v1
+    api-key: ${DEEPSEEK_API_KEY:}
+    model: deepseek-coder
+    timeout-ms: 20000
